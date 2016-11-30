@@ -7,6 +7,7 @@ package com.hue.signupandsignin.activity;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -64,7 +65,7 @@ public class LoginActivity extends Activity {
         // Check if user is already logged in or not
         if (session.isLoggedIn()) {
             // User is already logged in. Take him to main activity
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            Intent intent = new Intent(LoginActivity.this, TestMainActivity.class);
             startActivity(intent);
             finish();
         }
@@ -143,10 +144,16 @@ public class LoginActivity extends Activity {
                         // Inserting row in users table
                         db.addUser(name, email, uid, created_at);
 
+/*
                         // Launch main activity
                         Intent intent = new Intent(LoginActivity.this,
-                                MainActivity.class);
+                                TestMainActivity.class);
                         startActivity(intent);
+*/
+                        // return the user's info to the caller
+                        Intent data = new Intent();
+                        data.setData(Uri.parse(user.toString()));
+                        setResult(RESULT_OK, data);
                         finish();
                     } else {
                         // Error in login. Get the error message
