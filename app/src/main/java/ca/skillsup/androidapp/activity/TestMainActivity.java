@@ -1,12 +1,12 @@
-package com.hue.signupandsignin.activity;
+package ca.skillsup.androidapp.activity;
 
 /**
  * Created by manitou on 11/3/16.
  */
 
-import com.hue.signupandsignin.R;
-import com.hue.signupandsignin.helper.SQLiteHandler;
-import com.hue.signupandsignin.helper.SessionManager;
+import ca.skillsup.androidapp.R;
+import ca.skillsup.androidapp.helper.SQLiteHandler;
+import ca.skillsup.androidapp.helper.SessionManager;
 
 import java.util.HashMap;
 

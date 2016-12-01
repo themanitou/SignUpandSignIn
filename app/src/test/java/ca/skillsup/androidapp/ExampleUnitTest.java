@@ -1,4 +1,4 @@
-package com.hue.signupandsignin;
+package ca.skillsup.androidapp;
 
 import org.junit.Test;
 

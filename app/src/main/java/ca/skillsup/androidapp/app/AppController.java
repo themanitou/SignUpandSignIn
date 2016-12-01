@@ -1,4 +1,4 @@
-package com.hue.signupandsignin.app;
+package ca.skillsup.androidapp.app;
 
 /**
  * Created by manitou on 11/3/16.
@@ -11,7 +11,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.Volley;
-import com.hue.signupandsignin.R;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;

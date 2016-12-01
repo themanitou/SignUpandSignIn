@@ -1,4 +1,4 @@
-package com.hue.signupandsignin.app;
+package ca.skillsup.androidapp.app;
 
 /**
  * Created by manitou on 11/3/16.
