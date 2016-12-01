@@ -51,6 +51,8 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navigationView;
     private TextView nvHeaderText, nvHeaderEmail;
 
+    private FloatingActionButton fabMain;
+
     private GoogleMap mMap;
     private MapFragment mapFragment;
     private View mapView;
@@ -74,14 +76,7 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        fabMain = (FloatingActionButton) findViewById(R.id.fab);
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -110,6 +105,9 @@ public class MainActivity extends AppCompatActivity
 
         // build the navigation menu
         buildNavigationMenu();
+
+        // assign an action to floating action button
+        assignActionToFab();
     }
 
     private void buildNavigationMenu() {
@@ -136,13 +134,34 @@ public class MainActivity extends AppCompatActivity
                     "Create class");
             menu.add(NAV_MENU_ACTION_GROUP,
                     NAV_MENU_ACTION_GROUP_SIGNOUT,
-                    Menu.NONE,
+                    99,
                     "Log out");
         }
 
         menu.add(NAV_MENU_HELP_GROUP, NAV_MENU_HELP_GROUP_MAKEWISH, Menu.NONE, "Make a wish");
         menu.add(NAV_MENU_HELP_GROUP, NAV_MENU_HELP_GROUP_DEMO, Menu.NONE, "Show demo");
         menu.add(NAV_MENU_HELP_GROUP, NAV_MENU_HELP_GROUP_ABOUT, Menu.NONE, "About");
+    }
+
+    private void assignActionToFab() {
+        if (!session.isLoggedIn()) {
+            fabMain.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivityForResult(intent, ACT_RES_SIGNIN);
+                }
+            });
+        }
+        else {
+            fabMain.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Snackbar.make(view, "TODO: start the Create Class activity", Snackbar.LENGTH_LONG)
+                            .setAction("Action", null).show();
+                }
+            });
+        }
     }
 
     @Override
@@ -196,6 +215,9 @@ public class MainActivity extends AppCompatActivity
 
             // rebuild the navigation menu
             buildNavigationMenu();
+
+            // assign an action to floating action button
+            assignActionToFab();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(ca.skillsup.androidapp.R.id.drawer_layout);
@@ -208,11 +230,12 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == ACT_RES_SIGNIN) {
             if (resultCode == RESULT_OK) {
                 JSONObject userInfo;
+                String userName;
                 try {
                     userInfo = new JSONObject(data.getDataString());
-                    Log.i(TAG, "onActivityResult: Login successful.\n Welcome " + userInfo.getString("user"));
-                    Toast.makeText(this, "Login successful:\n" +
-                                    " Welcome " + userInfo.getString("user"),
+                    userName = userInfo.getString("name");
+                    Log.i(TAG, "onActivityResult: Login successful.\n Welcome " + userName);
+                    Toast.makeText(this, "Login successful:\nWelcome " + userName,
                             Toast.LENGTH_LONG).show();
                 }
                 catch (Exception e) {
@@ -224,6 +247,9 @@ public class MainActivity extends AppCompatActivity
 
                 // rebuild the navigation menu
                 buildNavigationMenu();
+
+                // assign an action to floating action button
+                assignActionToFab();
             }
         }
     }
