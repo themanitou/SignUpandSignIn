@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -22,7 +23,6 @@ import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity
     private static final int NAV_MENU_HELP_GROUP_ABOUT = 9902;
 
     private static final int ACT_RES_SIGNIN = 10;
+    private static final int ACT_RES_CREATECLASS = 20;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -120,7 +121,7 @@ public class MainActivity extends AppCompatActivity
             menu.add(NAV_MENU_ACTION_GROUP,
                     NAV_MENU_ACTION_GROUP_SIGNIN,
                     Menu.NONE,
-                    "Sign in");
+                    "Sign in").setIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_24dp));
         } else {
             // Fetching user details from sqlite
             HashMap<String, String> user = db.getUserDetails();
@@ -131,7 +132,7 @@ public class MainActivity extends AppCompatActivity
             menu.add(NAV_MENU_ACTION_GROUP,
                     NAV_MENU_ACTION_GROUP_CREATECLASS,
                     Menu.NONE,
-                    "Create class");
+                    "Create class").setIcon(ContextCompat.getDrawable(this, R.drawable.ic_school_24dp));
             menu.add(NAV_MENU_ACTION_GROUP,
                     NAV_MENU_ACTION_GROUP_SIGNOUT,
                     99,
@@ -148,20 +149,32 @@ public class MainActivity extends AppCompatActivity
             fabMain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                    startActivityForResult(intent, ACT_RES_SIGNIN);
+                    userLogin();
                 }
             });
+            fabMain.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_person_36dp));
         }
         else {
             fabMain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Snackbar.make(view, "TODO: start the Create Class activity", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                    createClass();
+//                    Snackbar.make(view, "TODO: start the Create Class activity", Snackbar.LENGTH_LONG)
+//                            .setAction("Action", null).show();
                 }
             });
+            fabMain.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_school_36dp));
         }
+    }
+
+    private void userLogin() {
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivityForResult(intent, ACT_RES_SIGNIN);
+    }
+
+    private void createClass() {
+        Intent intent = new Intent(this, CreateClassActivity.class);
+        startActivityForResult(intent, ACT_RES_CREATECLASS);
     }
 
     @Override
@@ -203,9 +216,9 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         if (id == NAV_MENU_ACTION_GROUP_SIGNIN) {
-            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-            startActivityForResult(intent, ACT_RES_SIGNIN);
-        } else if (id == NAV_MENU_ACTION_GROUP_SIGNOUT) {
+            userLogin();
+        }
+        else if (id == NAV_MENU_ACTION_GROUP_SIGNOUT) {
             session.setLogin(false);
             db.deleteUsers();
 
@@ -218,6 +231,9 @@ public class MainActivity extends AppCompatActivity
 
             // assign an action to floating action button
             assignActionToFab();
+        }
+        else if (id == NAV_MENU_ACTION_GROUP_CREATECLASS) {
+            createClass();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(ca.skillsup.androidapp.R.id.drawer_layout);
@@ -252,16 +268,13 @@ public class MainActivity extends AppCompatActivity
                 assignActionToFab();
             }
         }
+        else if (requestCode == ACT_RES_CREATECLASS) {
+            Log.d(TAG, "onActivityResult: return from Create Class, retCode=" + resultCode);
+            Toast.makeText(this, "Return from Create Class, retCode=" + resultCode,
+                    Toast.LENGTH_LONG).show();
+        }
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the MapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -282,7 +295,6 @@ public class MainActivity extends AppCompatActivity
         }
         mMap.setMyLocationEnabled(true);
 
-        Intent intent = getIntent();
         Location mLocation = placeManager.getLastKnownLocation();
 
         if (mLocation == null) {
