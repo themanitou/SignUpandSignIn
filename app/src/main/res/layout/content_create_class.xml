@@ -8,10 +8,56 @@
     tools:context="ca.skillsup.androidapp.activity.CreateClassActivity"
     tools:showIn="@layout/activity_create_class">
 
-    <TextView
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/text_margin"
-        android:text="@string/large_text" />
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/textViewWhenClass"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:layout_marginTop="@dimen/text_margin"
+            android:layout_marginBottom="@dimen/text_margin"
+            android:textSize="@dimen/label_medium_size"
+            android:text="@string/whenClassCreate" />
+
+        <LinearLayout
+            android:id="@+id/llSetDateTime"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textViewWhenClass"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvSetDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:text="@string/setDate"
+                android:layout_gravity="start"
+                android:onClick="onSelectDateClicked"/>
+
+            <TextView
+                android:id="@+id/tvSetTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textAlignment="center"
+                android:text="@string/setTime"
+                android:layout_gravity="end"
+                android:onClick="onSelectTimeClicked"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/text_margin"
+            android:layout_below="@id/llSetDateTime"
+            android:text="@string/large_text" />
+    </RelativeLayout>
 
 </android.support.v4.widget.NestedScrollView>
