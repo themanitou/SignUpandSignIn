@@ -111,4 +111,9 @@
     <string name="whenClassCreate">When</string>
     <string name="setDate">Select a date</string>
     <string name="setTime">Select a time</string>
+    <string name="preference_filename">ca.skillsup.androidapp.USER_SESSION_DATA</string>
+    <string name="preference_key_is_logged_in">isLoggedIn</string>
+    <string name="preference_key_user_email">userEmail</string>
+    <string name="preference_key_class_date_time">classDateTime</string>
+    <string name="preference_key_class_date_time_pattern">yyyy-MM-dd\'T\'HH:mm</string>
 </resources>

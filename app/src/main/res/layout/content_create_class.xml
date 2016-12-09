@@ -34,21 +34,25 @@
                 android:id="@+id/tvSetDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
                 android:textAlignment="center"
                 android:text="@string/setDate"
                 android:layout_gravity="start"
-                android:onClick="onSelectDateClicked"/>
+                android:onClick="onSelectDateClicked"
+                android:background="@color/btn_login_bg"/>
 
             <TextView
                 android:id="@+id/tvSetTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
                 android:textAlignment="center"
                 android:text="@string/setTime"
                 android:layout_gravity="end"
-                android:onClick="onSelectTimeClicked"/>
+                android:onClick="onSelectTimeClicked"
+                android:background="@color/btn_login_bg"/>
 
         </LinearLayout>
 

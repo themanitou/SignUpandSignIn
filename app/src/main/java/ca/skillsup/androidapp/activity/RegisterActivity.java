@@ -139,6 +139,9 @@ public class RegisterActivity extends Activity {
                         // Inserting row in users table
                         db.addUser(name, email, uid, created_at);
 
+                        // save user email in SharedPreference
+                        session.setUserEmail(email);
+
                         Toast.makeText(getApplicationContext(), "User successfully registered. Try login now!", Toast.LENGTH_LONG).show();
 
                         // Launch login activity
