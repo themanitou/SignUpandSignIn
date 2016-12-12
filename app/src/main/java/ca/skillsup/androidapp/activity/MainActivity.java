@@ -24,6 +24,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONObject;
@@ -92,12 +93,12 @@ public class MainActivity extends AppCompatActivity
         nvHeaderEmail = (TextView) hView.findViewById(R.id.nvHeaderEmail);
 
         // SqLite database handler
-        db = new SQLiteHandler(getApplicationContext());
+        db = new SQLiteHandler(this);
         // Session manager
-        session = new SessionManager(getApplicationContext());
+        session = new SessionManager(this);
 
         // Place Manager
-        placeManager = new PlaceManager(getApplicationContext());
+        placeManager = new PlaceManager(this);
 
         // set up onMapReadyCallback
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.main_map);
@@ -173,7 +174,11 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void createClass() {
+        CameraPosition camPos = mMap.getCameraPosition();
+
         Intent intent = new Intent(this, CreateClassActivity.class);
+        intent.putExtra(getString(R.string.EXTRA_MESSAGE_LATLNG),
+                new double[] { camPos.target.latitude, camPos.target.longitude });
         startActivityForResult(intent, ACT_RES_CREATECLASS);
     }
 
@@ -250,15 +255,15 @@ public class MainActivity extends AppCompatActivity
                 try {
                     userInfo = new JSONObject(data.getDataString());
                     userName = userInfo.getString("name");
-                    Log.i(TAG, "onActivityResult: Login successful.\n Welcome " + userName);
-                    Toast.makeText(this, "Login successful:\nWelcome " + userName,
-                            Toast.LENGTH_LONG).show();
+                    String infoString = "onActivityResult: Login successful.\n Welcome " + userName;
+                    Log.i(TAG, infoString);
+                    Toast.makeText(this, infoString, Toast.LENGTH_LONG).show();
                 }
                 catch (Exception e) {
-                    Log.d(TAG, "onActivityResult: Login successful, but unable to retrieve user info");
-                    Toast.makeText(this, "Login successful, but unable to retrieve user info",
-                            Toast.LENGTH_LONG).show();
-                    Log.d(TAG, e.toString());
+                    String errorString = "onActivityResult: Login successful, but unable to retrieve user info.\n" +
+                            e.getMessage();
+                    Log.d(TAG, errorString);
+                    Toast.makeText(this, errorString, Toast.LENGTH_LONG).show();
                 }
 
                 // rebuild the navigation menu
@@ -269,9 +274,9 @@ public class MainActivity extends AppCompatActivity
             }
         }
         else if (requestCode == ACT_RES_CREATECLASS) {
-            Log.d(TAG, "onActivityResult: return from Create Class, retCode=" + resultCode);
-            Toast.makeText(this, "Return from Create Class, retCode=" + resultCode,
-                    Toast.LENGTH_LONG).show();
+            String infoString = "onActivityResult: return from Create Class, retCode=" + resultCode;
+            Log.i(TAG, infoString);
+            Toast.makeText(this, infoString, Toast.LENGTH_LONG).show();
         }
     }
 
@@ -287,9 +292,9 @@ public class MainActivity extends AppCompatActivity
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            Log.w(TAG, "onMapReady: App does not have permission to access location service");
-            Toast.makeText(this, "App does not have permission to access location service",
-                    Toast.LENGTH_SHORT).show();
+            String warningString = "onMapReady: App does not have permission to access location service";
+            Log.w(TAG, warningString);
+            Toast.makeText(this, warningString, Toast.LENGTH_SHORT).show();
 
             return;
         }

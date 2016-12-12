@@ -44,7 +44,8 @@
         <activity
             android:name=".activity.CreateClassActivity"
             android:label="@string/title_activity_create_class"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".dialog.AddressPickerFragment"></activity>
     </application>
 
 </manifest>

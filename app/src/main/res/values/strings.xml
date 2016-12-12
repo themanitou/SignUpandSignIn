@@ -18,7 +18,7 @@
     <string name="google_maps_key" templateMergeStrategy="preserve" translatable="false">
          AIzaSyBKeb6nbj2NfVt77itShLuyTpYmo8QLJ5Y
     </string>
-    <string name="title_activity_create_class">Create class</string>
+    <string name="title_activity_create_class">Share a skill</string>
     <string name="large_text">
         "Material is the metaphor.\n\n"
 
@@ -109,11 +109,22 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="whenClassCreate">When</string>
+    <string name="whereClassCreate">Where</string>
     <string name="setDate">Select a date</string>
     <string name="setTime">Select a time</string>
+    <string name="showMap">Pick from map</string>
+    <string name="OK">OK</string>
+    <string name="searchAddress">Search</string>
+    <string name="EXTRA_MESSAGE_ADDRESS">ca.skillsup.androidapp.EXTRA_MESSAGE_ADDRESS</string>
+    <string name="EXTRA_MESSAGE_LATLNG">ca.skillsup.androidapp.EXTRA_MESSAGE_LATLNG</string>
+    <string name="EXTRA_MESSAGE_LATITUDE">ca.skillsup.androidapp.EXTRA_MESSAGE_LATITUDE</string>
+    <string name="EXTRA_MESSAGE_LONGITUDE">ca.skillsup.androidapp.EXTRA_MESSAGE_LONGITUDE</string>
     <string name="preference_filename">ca.skillsup.androidapp.USER_SESSION_DATA</string>
     <string name="preference_key_is_logged_in">isLoggedIn</string>
     <string name="preference_key_user_email">userEmail</string>
     <string name="preference_key_class_date_time">classDateTime</string>
     <string name="preference_key_class_date_time_pattern">yyyy-MM-dd\'T\'HH:mm</string>
+    <string name="preference_key_class_address">classAddress</string>
+    <string name="preference_key_class_address_latitude">classAddressLatitude</string>
+    <string name="preference_key_class_address_longitude">classAddressLongitude</string>
 </resources>

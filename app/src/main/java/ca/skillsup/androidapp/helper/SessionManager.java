@@ -7,7 +7,10 @@ package ca.skillsup.androidapp.helper;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.renderscript.Double2;
 import android.util.Log;
+
+import com.google.android.gms.maps.model.LatLng;
 
 import ca.skillsup.androidapp.R;
 
@@ -84,6 +87,79 @@ public class SessionManager {
         }
 
         return userPref.getString(_context.getString(R.string.preference_key_class_date_time), null);
+    }
+
+    public void setClassAddress(String classAddress) {
+        if (userPref == null) {
+            initializeUserPref();
+        }
+
+        if (userPref == null) {
+            // initializing user preferences has failed
+            return;
+        }
+
+        userEditor.putString(_context.getString(R.string.preference_key_class_address), classAddress);
+
+        // commit changes
+        userEditor.commit();
+
+        Log.d(TAG, "Class address saved to session preference.");
+    }
+
+    public String getClassAddress() {
+        if (userPref == null) {
+            initializeUserPref();
+        }
+
+        if (userPref == null) {
+            // initializing user preferences has failed
+            return null;
+        }
+
+        return userPref.getString(_context.getString(R.string.preference_key_class_address), null);
+    }
+
+    public void setClassAddressLatLng(LatLng classAddressLatLng) {
+        if (userPref == null) {
+            initializeUserPref();
+        }
+
+        if (userPref == null) {
+            // initializing user preferences has failed
+            return;
+        }
+
+        Double lat = classAddressLatLng.latitude;
+        Double lng = classAddressLatLng.longitude;
+
+        userEditor.putString(_context.getString(R.string.preference_key_class_address_latitude), lat.toString());
+        userEditor.putString(_context.getString(R.string.preference_key_class_address_longitude), lng.toString());
+
+        // commit changes
+        userEditor.commit();
+
+        Log.d(TAG, "Class latitude and longitude saved to session preference.");
+    }
+
+    public LatLng getClassAddressLatLng() {
+        if (userPref == null) {
+            initializeUserPref();
+        }
+
+        if (userPref == null) {
+            // initializing user preferences has failed
+            return null;
+        }
+
+        String strLat = userPref.getString(_context.getString(R.string.preference_key_class_address_latitude), null);
+        String strLng = userPref.getString(_context.getString(R.string.preference_key_class_address_longitude), null);
+
+        if (strLat == null || strLng == null) {
+            return null;
+        }
+
+        return new LatLng(Double.parseDouble(strLat), Double.parseDouble(strLng));
     }
 
     private void initializeUserPref() {
