@@ -2,9 +2,10 @@ package ca.skillsup.androidapp.activity;
 
 import android.app.DialogFragment;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -26,6 +27,7 @@ import ca.skillsup.androidapp.R;
 import ca.skillsup.androidapp.dialog.AddressPickerFragment;
 import ca.skillsup.androidapp.dialog.DatePickerFragment;
 import ca.skillsup.androidapp.dialog.TimePickerFragment;
+import ca.skillsup.androidapp.helper.PlaceManager;
 import ca.skillsup.androidapp.helper.SessionManager;
 
 public class CreateClassActivity extends AppCompatActivity
@@ -37,32 +39,52 @@ public class CreateClassActivity extends AppCompatActivity
     private static final int REQUEST_ADDRESS_PICKER = 1000;
 
     private SessionManager session;
+    private PlaceManager placeManager;
+
+    FloatingActionButton fabCreateClass;
+
+    private EditText edtClassName;
+    private String className;
 
     private TextView tvClassDate, tvClassTime;
     private Calendar classDate;
-    private EditText edtClassAddress;
 
+    private EditText edtClassAddress;
     private LatLng classLatLng;
     private String classAddress;
+
+    private EditText edtClassDescription;
+    private String classDescription;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_create_class);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         // Session manager
-        session = new SessionManager(getApplicationContext());
+        session = new SessionManager(this);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        // Place manager
+        placeManager = new PlaceManager(this);
+
+        fabCreateClass = (FloatingActionButton) findViewById(R.id.fabCreateClass);
+        fabCreateClass.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_done_36dp));
+        fabCreateClass.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                publishClass();
             }
         });
+
+        // pre-fill class name if possible
+        edtClassName = (EditText) findViewById(R.id.edtClassName);
+        className = session.getClassName();
+        if (className != null) {
+            edtClassName.setText(className);
+        }
 
         tvClassDate = (TextView) findViewById(R.id.tvSetDate);
         tvClassTime = (TextView) findViewById(R.id.tvSetTime);
@@ -81,7 +103,7 @@ public class CreateClassActivity extends AppCompatActivity
                 String errorString = "Date time saved in SharedPreference has wrong format: " +
                         strClassDateTime + "\n" + e.getMessage();
                 Log.w(TAG, errorString);
-                Toast.makeText(getApplicationContext(), errorString, Toast.LENGTH_LONG).show();
+                Toast.makeText(this, errorString, Toast.LENGTH_LONG).show();
             }
         }
 
@@ -102,6 +124,78 @@ public class CreateClassActivity extends AppCompatActivity
                 classLatLng = new LatLng(latlng[0],latlng[1]);
             }
         }
+
+        // pre-fill class description if possible
+        classDescription = session.getClassDescription();
+        edtClassDescription = (EditText) findViewById(R.id.edtClassDescription);
+        if (classDescription != null) {
+            edtClassDescription.setText(classDescription);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        // save user input data
+        saveUserInput();
+
+        // return to main activity, without advertising class
+        setResult(RESULT_CANCELED);
+        finish();
+    }
+
+    public void onOKButtonClicked(View view) {
+        publishClass();
+    }
+
+    private void saveUserInput() {
+        className = edtClassName.getText().toString();
+        if (className != null && !className.isEmpty()) {
+            session.setClassName(className);
+        }
+
+        classAddress = edtClassAddress.getText().toString();
+        if (classAddress != null && !classAddress.isEmpty()) {
+            session.setClassAddress(classAddress);
+            LatLng latlng = placeManager.getLocationFromAddress(classAddress);
+            if (latlng != null) {
+                classLatLng = latlng;
+            }
+            if (classLatLng != null) {
+                session.setClassAddressLatLng(classLatLng);
+            }
+        }
+
+        classDescription = edtClassDescription.getText().toString();
+        if (classDescription != null && !classDescription.isEmpty()) {
+            session.setClassDescription(classDescription);
+        }
+    }
+
+    private void publishClass() {
+        // save user input data
+        saveUserInput();
+
+        // return to main activity and indicate that class is published
+        JSONObject classDetails = new JSONObject();
+        try {
+            classDetails.put(getString(R.string.EXTRA_MESSAGE_NAME), className);
+            SimpleDateFormat format = new SimpleDateFormat(getString(
+                    R.string.preference_key_class_date_time_pattern));
+            classDetails.put(getString(R.string.EXTRA_MESSAGE_DATETIME), format.format(classDate.getTime()));
+            classDetails.put(getString(R.string.EXTRA_MESSAGE_ADDRESS), classAddress);
+            classDetails.put(getString(R.string.EXTRA_MESSAGE_LATITUDE), classLatLng.latitude);
+            classDetails.put(getString(R.string.EXTRA_MESSAGE_LONGITUDE), classLatLng.longitude);
+        }
+        catch (JSONException e) {
+            String errorString = "publishClass: error returning class details\n" + e.getMessage();
+            Log.e(TAG, errorString);
+            Toast.makeText(this, errorString, Toast.LENGTH_LONG).show();
+        }
+
+        Intent data = new Intent();
+        data.setData(Uri.parse(classDetails.toString()));
+        setResult(RESULT_OK, data);
+        finish();
     }
 
     @Override

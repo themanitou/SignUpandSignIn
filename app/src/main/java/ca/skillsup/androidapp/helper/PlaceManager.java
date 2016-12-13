@@ -101,4 +101,25 @@ public class PlaceManager {
 
         return null;
     }
+
+    public LatLng getLocationFromAddress(String strAddress) {
+        Geocoder coder = new Geocoder(mContext);
+
+        try {
+            if (coder.isPresent()) {
+                List<Address> addresses = coder.getFromLocationName(strAddress, 1);
+                if (addresses != null) {
+                    Address location = addresses.get(0);
+                    return (new LatLng(location.getLatitude(), location.getLongitude()));
+                }
+            }
+        } catch (Exception ex) {
+            String errorStr = "Error when trying to resolve location from " + strAddress +
+                    "\n" + ex.getMessage();
+            Log.e(TAG, errorStr);
+            Toast.makeText(mContext, errorStr, Toast.LENGTH_LONG).show();
+        }
+
+        return null;
+    }
 }

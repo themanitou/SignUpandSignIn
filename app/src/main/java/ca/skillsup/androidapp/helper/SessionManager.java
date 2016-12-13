@@ -58,6 +58,37 @@ public class SessionManager {
         return pref.getString(_context.getString(R.string.preference_key_user_email), null);
     }
 
+    public void setClassName(String className) {
+        if (userPref == null) {
+            initializeUserPref();
+        }
+
+        if (userPref == null) {
+            // initializing user preferences has failed
+            return;
+        }
+
+        userEditor.putString(_context.getString(R.string.preference_key_class_name), className);
+
+        // commit changes
+        userEditor.commit();
+
+        Log.d(TAG, "Class name saved to session preference.");
+    }
+
+    public String getClassName() {
+        if (userPref == null) {
+            initializeUserPref();
+        }
+
+        if (userPref == null) {
+            // initializing user preferences has failed
+            return null;
+        }
+
+        return userPref.getString(_context.getString(R.string.preference_key_class_name), null);
+    }
+
     public void setClassDateTime(String classDateTime) {
         if (userPref == null) {
             initializeUserPref();
@@ -160,6 +191,37 @@ public class SessionManager {
         }
 
         return new LatLng(Double.parseDouble(strLat), Double.parseDouble(strLng));
+    }
+
+    public void setClassDescription(String classDescription) {
+        if (userPref == null) {
+            initializeUserPref();
+        }
+
+        if (userPref == null) {
+            // initializing user preferences has failed
+            return;
+        }
+
+        userEditor.putString(_context.getString(R.string.preference_key_class_description), classDescription);
+
+        // commit changes
+        userEditor.commit();
+
+        Log.d(TAG, "Class description saved to session preference.");
+    }
+
+    public String getClassDescription() {
+        if (userPref == null) {
+            initializeUserPref();
+        }
+
+        if (userPref == null) {
+            // initializing user preferences has failed
+            return null;
+        }
+
+        return userPref.getString(_context.getString(R.string.preference_key_class_description), null);
     }
 
     private void initializeUserPref() {

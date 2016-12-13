@@ -21,33 +21,48 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_centerInParent="true" />
+        android:layout_centerInParent="true"/>
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/llAddrPickerInteractive"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:orientation="horizontal">
+        android:layout_alignParentBottom="true">
 
         <TextView android:id="@+id/tvSearchAddress"
-            android:layout_width="0dp"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="10"
-            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/text_margin"
             android:maxLines="3"
+            android:textAlignment="center"
             android:textColor="@android:color/black"
-            android:background="#AAFFFFFF"
-            android:onClick="onTvClassAddressClicked" />
+            android:background="@color/bg_gray_transparent" />
 
-        <Button
-            android:id="@+id/btnSelectClass"
-            android:text="@string/OK"
-            android:onClick="onOKButtonClicked"
-            android:layout_gravity="center_vertical"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tvSearchAddress"
+            android:orientation="horizontal"
+            android:layout_centerHorizontal="true">
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabSearchAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin"
+                android:scaleType="center"
+                android:backgroundTint="@color/bg_gray_transparent"
+                android:onClick="onFabSearchAddressClicked"/>
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fabSelectAddress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/fab_margin"
+                android:scaleType="center"
+                android:backgroundTint="@color/bg_gray_transparent"
+                android:onClick="onOKButtonClicked"/>
+        </LinearLayout>
+    </RelativeLayout>
 
 </RelativeLayout>

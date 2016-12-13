@@ -3,8 +3,10 @@ package ca.skillsup.androidapp.dialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
@@ -47,13 +49,13 @@ public class AddressPickerFragment extends FragmentActivity implements
     private TextView tvSearchAddress;
     private ImageView imageView;
 
+    private FloatingActionButton fabSelectAddress, fabSearchAddress;
     private String selectedAddress;
     private LatLng selectedLatlng;
 
     private PlaceManager placeManager;
 
     private final static int REQUEST_ADDRESS_AUTOCOMPLETE = 1000;
-    private final static int LATLNG_BOUND_RADIUS = 75;
 
     private boolean ignoreCameraIdleEvent = false;
 
@@ -76,6 +78,12 @@ public class AddressPickerFragment extends FragmentActivity implements
                     }
                 }
         );
+
+        fabSelectAddress = (FloatingActionButton) findViewById(R.id.fabSelectAddress);
+        fabSelectAddress.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_done_36dp));
+
+        fabSearchAddress = (FloatingActionButton) findViewById(R.id.fabSearchAddress);
+        fabSearchAddress.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.bubble_mask));
 
         Intent intent = getIntent();
         selectedAddress = intent.getStringExtra(getString(R.string.EXTRA_MESSAGE_ADDRESS));
@@ -111,13 +119,15 @@ public class AddressPickerFragment extends FragmentActivity implements
         finish();
     }
 
-    public void onTvClassAddressClicked(View view) {
+    private void launchAddressAutocomplete() {
+        int latlng_bound_radius = getResources().getInteger(R.integer.latlng_bound_radius);
+
         LatLng currentLatLng = mMap.getCameraPosition().target;
         LatLngBounds latLngBounds = new LatLngBounds.Builder().
-                include(SphericalUtil.computeOffset(currentLatLng, LATLNG_BOUND_RADIUS, 0)).
-                include(SphericalUtil.computeOffset(currentLatLng, LATLNG_BOUND_RADIUS, 90)).
-                include(SphericalUtil.computeOffset(currentLatLng, LATLNG_BOUND_RADIUS, 180)).
-                include(SphericalUtil.computeOffset(currentLatLng, LATLNG_BOUND_RADIUS, 270)).build();
+                include(SphericalUtil.computeOffset(currentLatLng, latlng_bound_radius, 0)).
+                include(SphericalUtil.computeOffset(currentLatLng, latlng_bound_radius, 90)).
+                include(SphericalUtil.computeOffset(currentLatLng, latlng_bound_radius, 180)).
+                include(SphericalUtil.computeOffset(currentLatLng, latlng_bound_radius, 270)).build();
 
         try {
             Intent intent = new PlaceAutocomplete.IntentBuilder
@@ -129,6 +139,10 @@ public class AddressPickerFragment extends FragmentActivity implements
                 GooglePlayServicesNotAvailableException e) {
             e.printStackTrace();
         }
+    }
+
+    public void onFabSearchAddressClicked(View view) {
+        launchAddressAutocomplete();
     }
 
     @Override
@@ -167,17 +181,22 @@ public class AddressPickerFragment extends FragmentActivity implements
         mMap.setMyLocationEnabled(true);
         mMap.setOnCameraIdleListener(this);
 
+        if (selectedAddress != null) {
+            tvSearchAddress.setText(selectedAddress);
+            ignoreCameraIdleEvent = true;
+        }
+
+        LatLng latlng = placeManager.getLocationFromAddress(selectedAddress);
+        if (latlng != null) {
+            selectedLatlng = latlng;
+        }
+
         if (selectedLatlng != null) {
             // Move the camera
             mMap.moveCamera(CameraUpdateFactory.newLatLng(selectedLatlng));
 
             // change zoom level
-            mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
-        }
-
-        if (selectedAddress != null) {
-            tvSearchAddress.setText(selectedAddress);
-            ignoreCameraIdleEvent = true;
+            mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.map_zoom)));
         }
     }
 

@@ -26,7 +26,9 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import ca.skillsup.androidapp.R;
@@ -34,6 +36,9 @@ import ca.skillsup.androidapp.helper.PlaceManager;
 import ca.skillsup.androidapp.helper.SQLiteHandler;
 import ca.skillsup.androidapp.helper.SessionManager;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
@@ -56,7 +61,6 @@ public class MainActivity extends AppCompatActivity
 
     private GoogleMap mMap;
     private MapFragment mapFragment;
-    private View mapView;
 
     private static final int NAV_MENU_ACTION_GROUP = 90;
     private static final int NAV_MENU_ACTION_GROUP_SIGNIN = 9000;
@@ -103,7 +107,6 @@ public class MainActivity extends AppCompatActivity
         // set up onMapReadyCallback
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.main_map);
         mapFragment.getMapAsync(this);
-        mapView = mapFragment.getView();
 
         // build the navigation menu
         buildNavigationMenu();
@@ -274,10 +277,50 @@ public class MainActivity extends AppCompatActivity
             }
         }
         else if (requestCode == ACT_RES_CREATECLASS) {
-            String infoString = "onActivityResult: return from Create Class, retCode=" + resultCode;
-            Log.i(TAG, infoString);
-            Toast.makeText(this, infoString, Toast.LENGTH_LONG).show();
+            if (resultCode == RESULT_OK) {
+                try {
+                    JSONObject classDetails = new JSONObject(data.getDataString());
+
+                    String className = classDetails.getString(getString(R.string.EXTRA_MESSAGE_NAME));
+
+                    String strClassDate = classDetails.getString(getString(R.string.EXTRA_MESSAGE_DATETIME));
+                    Date classDate = new SimpleDateFormat(getString(
+                            R.string.preference_key_class_date_time_pattern)).parse(strClassDate);
+
+                    String classAddress = classDetails.getString(getString(R.string.EXTRA_MESSAGE_ADDRESS));
+                    Double lat = classDetails.getDouble(getString(R.string.EXTRA_MESSAGE_LATITUDE));
+                    Double lng = classDetails.getDouble(getString(R.string.EXTRA_MESSAGE_LONGITUDE));
+                    LatLng classLatLng = new LatLng(lat, lng);
+
+                    // add marker on map
+                    addMarkerOnMap(className, classDate, classAddress, classLatLng);
+
+                    // move camera to this location
+                    mMap.moveCamera(CameraUpdateFactory.newLatLng(
+                            new LatLng(lat, lng)));
+
+                    // change zoom level
+                    mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.map_zoom)));
+                }
+                catch (Exception e) {
+                    String errorString = "Error getting class details\n" +
+                            e.getMessage();
+                    Log.e(TAG, errorString);
+                    Toast.makeText(this, errorString, Toast.LENGTH_LONG).show();
+                }
+            }
         }
+    }
+
+    private void addMarkerOnMap(String className, Date classDate,
+                                String classAddress, LatLng classLatLng) {
+        SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy 'at' h:mm a");
+        String strDate = format.format(classDate);
+
+        String markerSnippet = "Date: " + strDate + "\nAddress: " + classAddress;
+        mMap.addMarker(new MarkerOptions().position(classLatLng)
+                .title(className)
+                .snippet(markerSnippet));
     }
 
     @Override
@@ -311,6 +354,6 @@ public class MainActivity extends AppCompatActivity
                 new LatLng(mLocation.getLatitude(), mLocation.getLongitude())));
 
         // change zoom level
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(15));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(getResources().getInteger(R.integer.map_zoom)));
     }
 }
