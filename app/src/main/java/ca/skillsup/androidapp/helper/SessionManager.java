@@ -224,6 +224,37 @@ public class SessionManager {
         return userPref.getString(_context.getString(R.string.preference_key_class_description), null);
     }
 
+    public void setClassFee(float classFee) {
+        if (userPref == null) {
+            initializeUserPref();
+        }
+
+        if (userPref == null) {
+            // initializing user preferences has failed
+            return;
+        }
+
+        userEditor.putFloat(_context.getString(R.string.preference_key_class_fee), classFee);
+
+        // commit changes
+        userEditor.commit();
+
+        Log.d(TAG, "Class description saved to session preference.");
+    }
+
+    public float getClassFee() {
+        if (userPref == null) {
+            initializeUserPref();
+        }
+
+        if (userPref == null) {
+            // initializing user preferences has failed
+            return 0;
+        }
+
+        return userPref.getFloat(_context.getString(R.string.preference_key_class_fee), 0);
+    }
+
     private void initializeUserPref() {
         String userEmail = pref.getString(_context.getString(R.string.preference_key_user_email), null);
 

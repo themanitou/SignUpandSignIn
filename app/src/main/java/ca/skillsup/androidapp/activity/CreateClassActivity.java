@@ -56,6 +56,9 @@ public class CreateClassActivity extends AppCompatActivity
     private EditText edtClassDescription;
     private String classDescription;
 
+    private EditText edtClassFee;
+    private float classFee;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,6 +134,13 @@ public class CreateClassActivity extends AppCompatActivity
         if (classDescription != null) {
             edtClassDescription.setText(classDescription);
         }
+
+        // pre-fill class fee if possible
+        classFee = session.getClassFee();
+        edtClassFee = (EditText) findViewById(R.id.edtClassFee);
+        if (classFee != 0) {
+            edtClassFee.setText(String.valueOf(classFee));
+        }
     }
 
     @Override
@@ -141,10 +151,6 @@ public class CreateClassActivity extends AppCompatActivity
         // return to main activity, without advertising class
         setResult(RESULT_CANCELED);
         finish();
-    }
-
-    public void onOKButtonClicked(View view) {
-        publishClass();
     }
 
     private void saveUserInput() {
@@ -168,6 +174,24 @@ public class CreateClassActivity extends AppCompatActivity
         classDescription = edtClassDescription.getText().toString();
         if (classDescription != null && !classDescription.isEmpty()) {
             session.setClassDescription(classDescription);
+        }
+
+        String strClassFee = edtClassFee.getText().toString();
+        try {
+            if (strClassFee != null && !strClassFee.isEmpty()) {
+                classFee = Float.parseFloat(strClassFee);
+            }
+            else {
+                classFee = 0;
+            }
+            session.setClassFee(classFee);
+        }
+        catch (Exception e) {
+            classFee = 0;
+            String errorStr = "saveUserInput: error parsing class fee " + strClassFee + "\n" +
+                    e.getMessage();
+            Log.e(TAG, errorStr);
+            Toast.makeText(this, errorStr, Toast.LENGTH_LONG).show();
         }
     }
 

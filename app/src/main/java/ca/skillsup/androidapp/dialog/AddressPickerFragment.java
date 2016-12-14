@@ -83,7 +83,7 @@ public class AddressPickerFragment extends FragmentActivity implements
         fabSelectAddress.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_done_36dp));
 
         fabSearchAddress = (FloatingActionButton) findViewById(R.id.fabSearchAddress);
-        fabSearchAddress.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.bubble_mask));
+        fabSearchAddress.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_search_36dp));
 
         Intent intent = getIntent();
         selectedAddress = intent.getStringExtra(getString(R.string.EXTRA_MESSAGE_ADDRESS));

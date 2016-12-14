@@ -125,7 +125,8 @@ public class MainActivity extends AppCompatActivity
             menu.add(NAV_MENU_ACTION_GROUP,
                     NAV_MENU_ACTION_GROUP_SIGNIN,
                     Menu.NONE,
-                    "Sign in").setIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_24dp));
+                    getString(R.string.title_activity_sign_in))
+                    .setIcon(ContextCompat.getDrawable(this, R.drawable.ic_person_24dp));
         } else {
             // Fetching user details from sqlite
             HashMap<String, String> user = db.getUserDetails();
@@ -136,11 +137,12 @@ public class MainActivity extends AppCompatActivity
             menu.add(NAV_MENU_ACTION_GROUP,
                     NAV_MENU_ACTION_GROUP_CREATECLASS,
                     Menu.NONE,
-                    "Create class").setIcon(ContextCompat.getDrawable(this, R.drawable.ic_school_24dp));
+                    getString(R.string.title_activity_create_class))
+                    .setIcon(ContextCompat.getDrawable(this, R.drawable.ic_share_24dp));
             menu.add(NAV_MENU_ACTION_GROUP,
                     NAV_MENU_ACTION_GROUP_SIGNOUT,
                     99,
-                    "Log out");
+                    getString(R.string.title_activity_sign_out));
         }
 
         menu.add(NAV_MENU_HELP_GROUP, NAV_MENU_HELP_GROUP_MAKEWISH, Menu.NONE, "Make a wish");
@@ -163,11 +165,9 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onClick(View view) {
                     createClass();
-//                    Snackbar.make(view, "TODO: start the Create Class activity", Snackbar.LENGTH_LONG)
-//                            .setAction("Action", null).show();
                 }
             });
-            fabMain.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_school_36dp));
+            fabMain.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_share_36dp));
         }
     }
 

@@ -118,11 +118,31 @@
             android:layout_height="match_parent"
             android:layout_below="@id/textViewDescriptionClass"
             android:layout_marginBottom="@dimen/text_margin"/>
-        
+
+        <TextView
+            android:id="@+id/textViewClassFee"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/edtClassDescription"
+            android:layout_marginBottom="@dimen/text_margin"
+            android:textAlignment="center"
+            android:textAllCaps="true"
+            android:textSize="@dimen/label_medium_size"
+            android:text="@string/classFee" />
+
+        <EditText
+            android:id="@+id/edtClassFee"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/textViewClassFee"
+            android:layout_marginBottom="@dimen/text_margin"
+            android:inputType="numberDecimal"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="@dimen/blank_space"
-            android:layout_below="@id/edtClassDescription"></LinearLayout>
+            android:layout_below="@id/edtClassFee"></LinearLayout>
+
     </RelativeLayout>
 
 </android.support.v4.widget.NestedScrollView>
