@@ -46,14 +46,16 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/textViewWhenClass"
+            android:layout_marginBottom="@dimen/text_margin"
             android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tvSetDate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:textAlignment="center"
                 android:text="@string/setDate"
                 android:layout_gravity="start"
@@ -64,21 +66,59 @@
                 android:id="@+id/tvSetTime"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="@dimen/activity_horizontal_margin"
                 android:layout_weight="1"
+                android:layout_marginLeft="@dimen/activity_horizontal_margin"
+                android:layout_marginRight="@dimen/activity_horizontal_margin"
                 android:textAlignment="center"
                 android:text="@string/setTime"
                 android:layout_gravity="end"
                 android:onClick="onSelectTimeClicked"
                 android:background="@color/btn_login_bg"/>
+        </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/llSetDuration"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/llSetDateTime"
+            android:layout_marginBottom="@dimen/text_margin"
+            android:orientation="horizontal"
+            android:layout_centerHorizontal="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/text_margin"
+                android:text="@string/duration"/>
+
+            <Spinner
+                android:id="@+id/spSetDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/text_margin"
+                android:background="@color/btn_login_bg"/>
+
+            <TextView
+                android:id="@+id/tvSetDuration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/text_margin"
+                android:background="@color/btn_login_bg"
+                android:text="@string/setDuration"
+                android:onClick="onSelectDurationClicked"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/text_margin"
+                android:text="@string/minutes"/>
         </LinearLayout>
 
         <TextView
             android:id="@+id/textViewWhereClass"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/llSetDateTime"
+            android:layout_below="@id/llSetDuration"
             android:layout_marginBottom="@dimen/text_margin"
             android:textAlignment="center"
             android:textAllCaps="true"

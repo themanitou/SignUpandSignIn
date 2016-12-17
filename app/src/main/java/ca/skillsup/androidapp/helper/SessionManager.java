@@ -18,171 +18,132 @@ public class SessionManager {
     // LogCat tag
     private static String TAG = SessionManager.class.getSimpleName();
 
+    // implement this class as a singleton
+    private static SessionManager mInstance;
+
     // Shared Preferences
-    SharedPreferences pref, userPref;
+    private SharedPreferences pref, userPref;
 
-    Editor editor, userEditor;
-    Context _context;
+    private Editor editor, userEditor;
+    private Context _context;
 
-    public SessionManager(Context context) {
-        this._context = context;
-        pref = context.getSharedPreferences(context.getString(R.string.preference_filename),
-                context.MODE_PRIVATE);
-        editor = pref.edit();
+    private String userEmail;
+    private boolean isLoggedIn;
+
+    private SessionManager() { }
+
+    public static SessionManager getInstance(Context context) {
+        if (mInstance == null) {
+            mInstance = new SessionManager();
+            mInstance._context = context;
+            mInstance.pref = context.getSharedPreferences(context.getString(R.string.preference_filename),
+                    context.MODE_PRIVATE);
+            mInstance.editor = mInstance.pref.edit();
+
+            mInstance.isLoggedIn = mInstance.pref.getBoolean(mInstance._context.getString(R.string.preference_key_is_logged_in), false);
+            mInstance.userEmail = mInstance.pref.getString(mInstance._context.getString(R.string.preference_key_user_email), null);
+
+            if (mInstance.isLoggedIn) {
+                mInstance.initializeUserPref();
+            }
+            Log.i(TAG, "Create new global SessionManager");
+        }
+        return mInstance;
     }
 
-    public void setLogin(boolean isLoggedIn) {
-
-        editor.putBoolean(_context.getString(R.string.preference_key_is_logged_in), isLoggedIn);
-
-        // commit changes
+    public void setLogout() {
+        isLoggedIn = false;
+        editor.putBoolean(_context.getString(R.string.preference_key_is_logged_in), false);
         editor.commit();
 
-        Log.d(TAG, "User login session modified!");
+        userEditor = null;
+        userPref = null;
+    }
+
+    public void setLogin(String email) {
+        editor.putString(_context.getString(R.string.preference_key_user_email), email);
+        editor.putBoolean(_context.getString(R.string.preference_key_is_logged_in), true);
+        editor.commit();
+
+        isLoggedIn = true;
+        userEmail = email;
+        initializeUserPref();
+
+        Log.d(TAG, "Login session modified for " + email);
     }
 
     public boolean isLoggedIn() {
-        return pref.getBoolean(_context.getString(R.string.preference_key_is_logged_in), false);
+        return isLoggedIn;
     }
 
-    public void setUserEmail(String userEmail) {
-        editor.putString(_context.getString(R.string.preference_key_user_email), userEmail);
-
-        // commit changes
+    public void setUserEmail(String email) {
+        userEmail = email;
+        editor.putString(_context.getString(R.string.preference_key_user_email), email);
         editor.commit();
 
-        Log.d(TAG, "User email saved to session preference.");
+        Log.d(TAG, "Set user email " + email);
     }
 
     public String getUserEmail() {
-        return pref.getString(_context.getString(R.string.preference_key_user_email), null);
+        return userEmail;
     }
 
     public void setClassName(String className) {
-        if (userPref == null) {
-            initializeUserPref();
-        }
-
-        if (userPref == null) {
-            // initializing user preferences has failed
-            return;
-        }
-
         userEditor.putString(_context.getString(R.string.preference_key_class_name), className);
-
-        // commit changes
         userEditor.commit();
 
         Log.d(TAG, "Class name saved to session preference.");
     }
 
     public String getClassName() {
-        if (userPref == null) {
-            initializeUserPref();
-        }
-
-        if (userPref == null) {
-            // initializing user preferences has failed
-            return null;
-        }
-
         return userPref.getString(_context.getString(R.string.preference_key_class_name), null);
     }
 
     public void setClassDateTime(String classDateTime) {
-        if (userPref == null) {
-            initializeUserPref();
-        }
-
-        if (userPref == null) {
-            // initializing user preferences has failed
-            return;
-        }
-
         userEditor.putString(_context.getString(R.string.preference_key_class_date_time), classDateTime);
-
-        // commit changes
         userEditor.commit();
 
         Log.d(TAG, "Class date saved to session preference.");
     }
 
     public String getClassDateTime() {
-        if (userPref == null) {
-            initializeUserPref();
-        }
-
-        if (userPref == null) {
-            // initializing user preferences has failed
-            return null;
-        }
-
         return userPref.getString(_context.getString(R.string.preference_key_class_date_time), null);
     }
 
+    public void setClassDuration(String classDuration) {
+        userEditor.putString(_context.getString(R.string.preference_key_class_duration), classDuration);
+        userEditor.commit();
+
+        Log.d(TAG, "Class duration saved to session preference.");
+    }
+
+    public String getClassDuration() {
+        return userPref.getString(_context.getString(R.string.preference_key_class_duration), null);
+    }
+
     public void setClassAddress(String classAddress) {
-        if (userPref == null) {
-            initializeUserPref();
-        }
-
-        if (userPref == null) {
-            // initializing user preferences has failed
-            return;
-        }
-
         userEditor.putString(_context.getString(R.string.preference_key_class_address), classAddress);
-
-        // commit changes
         userEditor.commit();
 
         Log.d(TAG, "Class address saved to session preference.");
     }
 
     public String getClassAddress() {
-        if (userPref == null) {
-            initializeUserPref();
-        }
-
-        if (userPref == null) {
-            // initializing user preferences has failed
-            return null;
-        }
-
         return userPref.getString(_context.getString(R.string.preference_key_class_address), null);
     }
 
     public void setClassAddressLatLng(LatLng classAddressLatLng) {
-        if (userPref == null) {
-            initializeUserPref();
-        }
-
-        if (userPref == null) {
-            // initializing user preferences has failed
-            return;
-        }
-
         Double lat = classAddressLatLng.latitude;
         Double lng = classAddressLatLng.longitude;
 
         userEditor.putString(_context.getString(R.string.preference_key_class_address_latitude), lat.toString());
         userEditor.putString(_context.getString(R.string.preference_key_class_address_longitude), lng.toString());
-
-        // commit changes
         userEditor.commit();
 
         Log.d(TAG, "Class latitude and longitude saved to session preference.");
     }
 
     public LatLng getClassAddressLatLng() {
-        if (userPref == null) {
-            initializeUserPref();
-        }
-
-        if (userPref == null) {
-            // initializing user preferences has failed
-            return null;
-        }
-
         String strLat = userPref.getString(_context.getString(R.string.preference_key_class_address_latitude), null);
         String strLng = userPref.getString(_context.getString(R.string.preference_key_class_address_longitude), null);
 
@@ -194,79 +155,45 @@ public class SessionManager {
     }
 
     public void setClassDescription(String classDescription) {
-        if (userPref == null) {
-            initializeUserPref();
-        }
-
-        if (userPref == null) {
-            // initializing user preferences has failed
-            return;
-        }
-
         userEditor.putString(_context.getString(R.string.preference_key_class_description), classDescription);
-
-        // commit changes
         userEditor.commit();
 
         Log.d(TAG, "Class description saved to session preference.");
     }
 
     public String getClassDescription() {
-        if (userPref == null) {
-            initializeUserPref();
-        }
-
-        if (userPref == null) {
-            // initializing user preferences has failed
-            return null;
-        }
-
         return userPref.getString(_context.getString(R.string.preference_key_class_description), null);
     }
 
     public void setClassFee(float classFee) {
-        if (userPref == null) {
-            initializeUserPref();
-        }
-
-        if (userPref == null) {
-            // initializing user preferences has failed
-            return;
-        }
-
         userEditor.putFloat(_context.getString(R.string.preference_key_class_fee), classFee);
-
-        // commit changes
         userEditor.commit();
 
-        Log.d(TAG, "Class description saved to session preference.");
+        Log.d(TAG, "Class fee saved to session preference.");
     }
 
     public float getClassFee() {
-        if (userPref == null) {
-            initializeUserPref();
-        }
-
-        if (userPref == null) {
-            // initializing user preferences has failed
-            return 0;
-        }
-
         return userPref.getFloat(_context.getString(R.string.preference_key_class_fee), 0);
     }
 
     private void initializeUserPref() {
-        String userEmail = pref.getString(_context.getString(R.string.preference_key_user_email), null);
-
-        if (userEmail == null) {
-            // this should not happen
-            Log.e(TAG, "User email is null in SharedPreference.");
-            return;
-        }
-
         userPref = _context.getSharedPreferences(
                 _context.getString(R.string.preference_filename) + userEmail,
                 _context.MODE_PRIVATE);
         userEditor = userPref.edit();
+    }
+
+    public void clearUserPref() {
+        userEditor.clear();
+        userEditor.commit();
+
+        Log.d(TAG, "Clear all preferences for " + userEmail);
+    }
+
+    public void clearPref() {
+        editor.clear();
+        editor.commit();
+
+        Log.d(TAG, "Clear global preferences.");
     }
 }

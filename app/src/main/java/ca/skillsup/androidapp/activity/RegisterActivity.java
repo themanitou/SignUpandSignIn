@@ -58,19 +58,10 @@ public class RegisterActivity extends Activity {
         pDialog.setCancelable(false);
 
         // Session manager
-        session = new SessionManager(getApplicationContext());
+        session = SessionManager.getInstance(this);
 
         // SQLite database handler
         db = new SQLiteHandler(getApplicationContext());
-
-        // Check if user is already logged in or not
-        if (session.isLoggedIn()) {
-            // User is already logged in. Take him to main activity
-            Intent intent = new Intent(RegisterActivity.this,
-                    TestMainActivity.class);
-            startActivity(intent);
-            finish();
-        }
 
         // Register Button Click event
         btnRegister.setOnClickListener(new View.OnClickListener() {

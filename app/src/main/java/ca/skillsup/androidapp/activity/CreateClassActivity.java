@@ -26,12 +26,15 @@ import java.util.Date;
 import ca.skillsup.androidapp.R;
 import ca.skillsup.androidapp.dialog.AddressPickerFragment;
 import ca.skillsup.androidapp.dialog.DatePickerFragment;
+import ca.skillsup.androidapp.dialog.NumberPickerFragment;
 import ca.skillsup.androidapp.dialog.TimePickerFragment;
 import ca.skillsup.androidapp.helper.PlaceManager;
 import ca.skillsup.androidapp.helper.SessionManager;
 
 public class CreateClassActivity extends AppCompatActivity
-        implements DatePickerFragment.callBackListener, TimePickerFragment.callBackListener {
+        implements DatePickerFragment.callBackListener,
+                    TimePickerFragment.callBackListener,
+                    NumberPickerFragment.callBackListener {
 
     // LogCat tag
     private static String TAG = CreateClassActivity.class.getSimpleName();
@@ -48,6 +51,10 @@ public class CreateClassActivity extends AppCompatActivity
 
     private TextView tvClassDate, tvClassTime;
     private Calendar classDate;
+
+    private String classDuration;
+    private TextView tvSetDuration;
+    private int[] allDurations;
 
     private EditText edtClassAddress;
     private LatLng classLatLng;
@@ -68,10 +75,10 @@ public class CreateClassActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         // Session manager
-        session = new SessionManager(this);
+        session = SessionManager.getInstance(this);
 
         // Place manager
-        placeManager = new PlaceManager(this);
+        placeManager = PlaceManager.getInstance(this);
 
         fabCreateClass = (FloatingActionButton) findViewById(R.id.fabCreateClass);
         fabCreateClass.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_done_36dp));
@@ -89,10 +96,9 @@ public class CreateClassActivity extends AppCompatActivity
             edtClassName.setText(className);
         }
 
+        // pre-fill class date and time if possible
         tvClassDate = (TextView) findViewById(R.id.tvSetDate);
         tvClassTime = (TextView) findViewById(R.id.tvSetTime);
-
-        // pre-fill class date and time if possible
         String strClassDateTime = session.getClassDateTime();
         classDate = Calendar.getInstance();
         if (strClassDateTime != null) {
@@ -109,6 +115,15 @@ public class CreateClassActivity extends AppCompatActivity
                 Toast.makeText(this, errorString, Toast.LENGTH_LONG).show();
             }
         }
+
+        // pre-fill class duration if possible
+        classDuration = session.getClassDuration();
+        tvSetDuration = (TextView) findViewById(R.id.tvSetDuration);
+        allDurations = getResources().getIntArray(R.array.allDurations);
+        if (classDuration == null) {
+            classDuration = getString(R.string.defaultClassDuration);
+        }
+        tvSetDuration.setText(classDuration);
 
         // pre-fill class address if possible
         classAddress = session.getClassAddress();
@@ -158,6 +173,14 @@ public class CreateClassActivity extends AppCompatActivity
         if (className != null && !className.isEmpty()) {
             session.setClassName(className);
         }
+
+        // save date, time and duration to SharedPreference
+        SimpleDateFormat format = new SimpleDateFormat(getString(
+                R.string.preference_key_class_date_time_pattern));
+        session.setClassDateTime(format.format(classDate.getTime()));
+        session.setClassDateTime(format.format(classDate.getTime()));
+
+        session.setClassDuration(classDuration);
 
         classAddress = edtClassAddress.getText().toString();
         if (classAddress != null && !classAddress.isEmpty()) {
@@ -226,12 +249,6 @@ public class CreateClassActivity extends AppCompatActivity
     public void onDatePickerListener(int year, int month, int day) {
         classDate.set(year, month, day,
                 classDate.get(Calendar.HOUR_OF_DAY), classDate.get(Calendar.MINUTE));
-
-        // save date time to SharedPreference
-        SimpleDateFormat format = new SimpleDateFormat(getString(
-                R.string.preference_key_class_date_time_pattern));
-        session.setClassDateTime(format.format(classDate.getTime()));
-
         showDate();
     }
 
@@ -239,13 +256,13 @@ public class CreateClassActivity extends AppCompatActivity
     public void onTimePickerListener(int hourOfDay, int minute) {
         classDate.set(classDate.get(Calendar.YEAR), classDate.get(Calendar.MONTH),
                 classDate.get(Calendar.DAY_OF_MONTH), hourOfDay, minute);
-
-        // save date time to SharedPreference
-        SimpleDateFormat format = new SimpleDateFormat(getString(
-                R.string.preference_key_class_date_time_pattern));
-        session.setClassDateTime(format.format(classDate.getTime()));
-
         showTime();
+    }
+
+    @Override
+    public void onNumberPickerListener(int selectPosition) {
+        classDuration = String.valueOf(allDurations[selectPosition - 1]);
+        tvSetDuration.setText(classDuration);
     }
 
     public void onSelectDateClicked(View view) {
@@ -258,6 +275,13 @@ public class CreateClassActivity extends AppCompatActivity
         fragmentTimeSelection.show(getFragmentManager(), "timePicker");
     }
 
+    public void onSelectDurationClicked(View view) {
+        int selectPosition = Integer.parseInt(classDuration)/15 + 1;
+        DialogFragment fragmentDurationSelection = NumberPickerFragment.newInstance
+                (getString(R.string.setDuration), allDurations, selectPosition);
+        fragmentDurationSelection.show(getFragmentManager(), "durationPicker");
+    }
+
     private void showDate() {
         SimpleDateFormat format = new SimpleDateFormat("EEEE, MMMM d, yyyy");
         tvClassDate.setText(format.format(classDate.getTime()));
@@ -266,12 +290,6 @@ public class CreateClassActivity extends AppCompatActivity
     private void showTime() {
         SimpleDateFormat format = new SimpleDateFormat("h:mm a");
         tvClassTime.setText(format.format(classDate.getTime()));
-    }
-
-    private void setClassAddress() {
-        session.setClassAddress(classAddress);
-        session.setClassAddressLatLng(classLatLng);
-        edtClassAddress.setText(classAddress);
     }
 
     @Override
@@ -285,7 +303,7 @@ public class CreateClassActivity extends AppCompatActivity
                     Double lng = classVenue.getDouble(getString(R.string.EXTRA_MESSAGE_LONGITUDE));
                     classLatLng = new LatLng(lat, lng);
 
-                    setClassAddress();
+                    edtClassAddress.setText(classAddress);
                 }
                 catch (JSONException e) {
                     String errorString = "Error getting selected address and latitude, longitude\n" +

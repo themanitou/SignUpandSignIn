@@ -29,13 +29,22 @@ public class PlaceManager {
     // LogCat tag
     private static String TAG = PlaceManager.class.getSimpleName();
 
+    // implement as a singleton
+    private static PlaceManager mInstance;
+
     Context mContext;
 
-    public PlaceManager(Context context) {
-        mContext = context;
+    private PlaceManager() { }
+
+    public static PlaceManager getInstance(Context context) {
+        if (mInstance == null) {
+            mInstance = new PlaceManager();
+            mInstance.mContext = context;
+        }
+        return mInstance;
     }
 
-    public Location getLastKnownLocation() {
+    public boolean checkLocationPermission() {
         if (ActivityCompat.checkSelfPermission(mContext, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED &&
                 ActivityCompat.checkSelfPermission(mContext, ACCESS_COARSE_LOCATION) != PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -45,12 +54,22 @@ public class PlaceManager {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            Log.w(TAG, "getLastKnownLocation: App does not have permission to access location service");
-            Toast.makeText(mContext, "App does not have permission to access location service",
-                    Toast.LENGTH_SHORT).show();
+            String warningStr = "App does not have permission to access location service";
+            Log.w(TAG, warningStr);
+            Toast.makeText(mContext, warningStr, Toast.LENGTH_SHORT).show();
 
+            return false;
+        }
+
+        return true;
+    }
+
+    public Location getLastKnownLocation() {
+        // if app does not have permission to access location service
+        if (checkLocationPermission() == false) {
             return null;
         }
+
         LocationManager locationManager = (LocationManager) mContext.getSystemService(LOCATION_SERVICE);
         Location mLastLocation = locationManager.getLastKnownLocation(NETWORK_PROVIDER);
         if (mLastLocation == null) {
@@ -58,9 +77,9 @@ public class PlaceManager {
         }
 
         if (mLastLocation == null) {
-            Log.w(TAG, "getLastKnownLocation: last location not known");
-            Toast.makeText(mContext, "Last location not known",
-                    Toast.LENGTH_SHORT).show();
+            String warningStr = "Last location not known";
+            Log.w(TAG, warningStr);
+            Toast.makeText(mContext, warningStr, Toast.LENGTH_SHORT).show();
         }
 
         return mLastLocation;

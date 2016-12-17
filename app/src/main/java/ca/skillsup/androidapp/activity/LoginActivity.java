@@ -57,18 +57,10 @@ public class LoginActivity extends Activity {
         pDialog.setCancelable(false);
 
         // SQLite database handler
-        db = new SQLiteHandler(getApplicationContext());
+        db = new SQLiteHandler(this);
 
         // Session manager
-        session = new SessionManager(getApplicationContext());
-
-        // Check if user is already logged in or not
-        if (session.isLoggedIn()) {
-            // User is already logged in. Take him to main activity
-            Intent intent = new Intent(LoginActivity.this, TestMainActivity.class);
-            startActivity(intent);
-            finish();
-        }
+        session = SessionManager.getInstance(this);
 
         // pre-fill user email from SharedPreference
         String savedUserEmail = session.getUserEmail();
@@ -87,7 +79,6 @@ public class LoginActivity extends Activity {
                 if (!email.isEmpty() && !password.isEmpty()) {
                     // login user
                     checkLogin(email, password);
-                    session.setUserEmail(email);
                 } else {
                     // Prompt user to enter credentials
                     Toast.makeText(getApplicationContext(),
@@ -135,10 +126,6 @@ public class LoginActivity extends Activity {
 
                     // Check for error node in json
                     if (!error) {
-                        // user successfully logged in
-                        // Create login session
-                        session.setLogin(true);
-
                         // Now store the user in SQLite
                         String uid = jObj.getString("id");
 
@@ -151,12 +138,10 @@ public class LoginActivity extends Activity {
                         // Inserting row in users table
                         db.addUser(name, email, uid, created_at);
 
-/*
-                        // Launch main activity
-                        Intent intent = new Intent(LoginActivity.this,
-                                TestMainActivity.class);
-                        startActivity(intent);
-*/
+                        // user successfully logged in
+                        // Create login session
+                        session.setLogin(email);
+
                         // return the user's info to the caller
                         Intent data = new Intent();
                         data.setData(Uri.parse(user.toString()));

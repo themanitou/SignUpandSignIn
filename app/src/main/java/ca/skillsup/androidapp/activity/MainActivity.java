@@ -99,10 +99,10 @@ public class MainActivity extends AppCompatActivity
         // SqLite database handler
         db = new SQLiteHandler(this);
         // Session manager
-        session = new SessionManager(this);
+        session = SessionManager.getInstance(this);
 
         // Place Manager
-        placeManager = new PlaceManager(this);
+        placeManager = PlaceManager.getInstance(this);
 
         // set up onMapReadyCallback
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.main_map);
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity
             userLogin();
         }
         else if (id == NAV_MENU_ACTION_GROUP_SIGNOUT) {
-            session.setLogin(false);
+            session.setLogout();
             db.deleteUsers();
 
             Log.i(TAG, "onNavigationItemSelected: Logout successful.");
@@ -242,6 +242,12 @@ public class MainActivity extends AppCompatActivity
         }
         else if (id == NAV_MENU_ACTION_GROUP_CREATECLASS) {
             createClass();
+        }
+        else if (id == NAV_MENU_HELP_GROUP_MAKEWISH) {
+            session.clearUserPref();
+        }
+        else if (id == NAV_MENU_HELP_GROUP_DEMO) {
+            session.clearPref();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(ca.skillsup.androidapp.R.id.drawer_layout);
@@ -326,25 +332,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) != PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(this, ACCESS_COARSE_LOCATION) != PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            String warningString = "onMapReady: App does not have permission to access location service";
-            Log.w(TAG, warningString);
-            Toast.makeText(this, warningString, Toast.LENGTH_SHORT).show();
 
+        // in case app does not have permission to access location services
+        if (placeManager.checkLocationPermission() == false) {
             return;
         }
+
         mMap.setMyLocationEnabled(true);
-
         Location mLocation = placeManager.getLastKnownLocation();
-
         if (mLocation == null) {
             return;
         }

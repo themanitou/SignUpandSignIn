@@ -27,8 +27,12 @@
     <string name="className">Skill name</string>
     <string name="whenClassCreate">When</string>
     <string name="whereClassCreate">Where</string>
+    <string name="duration">Duration</string>
+    <string name="minutes">minutes</string>
     <string name="setDate">Select a date</string>
     <string name="setTime">Select a time</string>
+    <string name="setDuration">Select a duration</string>
+    <string name="defaultClassDuration">60</string>
     <string name="showMap">Pick from map</string>
     <string name="descriptionClass">About this skill</string>
     <string name="classFee">Fee</string>
@@ -46,6 +50,7 @@
     <string name="preference_key_class_name">className</string>
     <string name="preference_key_class_date_time">classDateTime</string>
     <string name="preference_key_class_date_time_pattern">yyyy-MM-dd\'T\'HH:mm</string>
+    <string name="preference_key_class_duration">classDuration</string>
     <string name="preference_key_class_address">classAddress</string>
     <string name="preference_key_class_address_latitude">classAddressLatitude</string>
     <string name="preference_key_class_address_longitude">classAddressLongitude</string>
