@@ -43,17 +43,4 @@
     <string name="EXTRA_MESSAGE_LATLNG">ca.skillsup.androidapp.EXTRA_MESSAGE_LATLNG</string>
     <string name="EXTRA_MESSAGE_LATITUDE">ca.skillsup.androidapp.EXTRA_MESSAGE_LATITUDE</string>
     <string name="EXTRA_MESSAGE_LONGITUDE">ca.skillsup.androidapp.EXTRA_MESSAGE_LONGITUDE</string>
-
-    <string name="preference_filename">ca.skillsup.androidapp.USER_SESSION_DATA</string>
-    <string name="preference_key_is_logged_in">isLoggedIn</string>
-    <string name="preference_key_user_email">userEmail</string>
-    <string name="preference_key_class_name">className</string>
-    <string name="preference_key_class_date_time">classDateTime</string>
-    <string name="preference_key_class_date_time_pattern">yyyy-MM-dd\'T\'HH:mm</string>
-    <string name="preference_key_class_duration">classDuration</string>
-    <string name="preference_key_class_address">classAddress</string>
-    <string name="preference_key_class_address_latitude">classAddressLatitude</string>
-    <string name="preference_key_class_address_longitude">classAddressLongitude</string>
-    <string name="preference_key_class_description">classDescription</string>
-    <string name="preference_key_class_fee">classFee</string>
 </resources>

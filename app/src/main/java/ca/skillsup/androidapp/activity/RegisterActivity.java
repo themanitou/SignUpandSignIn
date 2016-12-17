@@ -39,7 +39,7 @@ public class RegisterActivity extends Activity {
     private EditText inputEmail;
     private EditText inputPassword;
     private ProgressDialog pDialog;
-    private SessionManager session;
+    private SessionManager sessionManager;
     private SQLiteHandler db;
 
     @Override
@@ -58,7 +58,7 @@ public class RegisterActivity extends Activity {
         pDialog.setCancelable(false);
 
         // Session manager
-        session = SessionManager.getInstance(this);
+        sessionManager = SessionManager.getInstance();
 
         // SQLite database handler
         db = new SQLiteHandler(getApplicationContext());
@@ -131,7 +131,7 @@ public class RegisterActivity extends Activity {
                         db.addUser(name, email, uid, created_at);
 
                         // save user email in SharedPreference
-                        session.setUserEmail(email);
+                        sessionManager.setUserEmail(email);
 
                         Toast.makeText(getApplicationContext(), "User successfully registered. Try login now!", Toast.LENGTH_LONG).show();
 

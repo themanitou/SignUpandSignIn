@@ -41,7 +41,7 @@ public class CreateClassActivity extends AppCompatActivity
 
     private static final int REQUEST_ADDRESS_PICKER = 1000;
 
-    private SessionManager session;
+    private SessionManager sessionManager;
     private PlaceManager placeManager;
 
     FloatingActionButton fabCreateClass;
@@ -75,10 +75,10 @@ public class CreateClassActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         // Session manager
-        session = SessionManager.getInstance(this);
+        sessionManager = SessionManager.getInstance();
 
         // Place manager
-        placeManager = PlaceManager.getInstance(this);
+        placeManager = PlaceManager.getInstance();
 
         fabCreateClass = (FloatingActionButton) findViewById(R.id.fabCreateClass);
         fabCreateClass.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_done_36dp));
@@ -91,7 +91,7 @@ public class CreateClassActivity extends AppCompatActivity
 
         // pre-fill class name if possible
         edtClassName = (EditText) findViewById(R.id.edtClassName);
-        className = session.getClassName();
+        className = sessionManager.getClassName();
         if (className != null) {
             edtClassName.setText(className);
         }
@@ -99,12 +99,11 @@ public class CreateClassActivity extends AppCompatActivity
         // pre-fill class date and time if possible
         tvClassDate = (TextView) findViewById(R.id.tvSetDate);
         tvClassTime = (TextView) findViewById(R.id.tvSetTime);
-        String strClassDateTime = session.getClassDateTime();
+        String strClassDateTime = sessionManager.getClassDateTime();
         classDate = Calendar.getInstance();
         if (strClassDateTime != null) {
             try {
-                Date date = new SimpleDateFormat(getString(
-                        R.string.preference_key_class_date_time_pattern)).parse(strClassDateTime);
+                Date date = new SimpleDateFormat(SessionManager.PREFERENCE_KEY_CLASS_DATE_TIME_PATTERN).parse(strClassDateTime);
                 classDate.setTime(date);
                 showDate();
                 showTime();
@@ -117,7 +116,7 @@ public class CreateClassActivity extends AppCompatActivity
         }
 
         // pre-fill class duration if possible
-        classDuration = session.getClassDuration();
+        classDuration = sessionManager.getClassDuration();
         tvSetDuration = (TextView) findViewById(R.id.tvSetDuration);
         allDurations = getResources().getIntArray(R.array.allDurations);
         if (classDuration == null) {
@@ -126,15 +125,15 @@ public class CreateClassActivity extends AppCompatActivity
         tvSetDuration.setText(classDuration);
 
         // pre-fill class address if possible
-        classAddress = session.getClassAddress();
+        classAddress = sessionManager.getClassAddress();
         edtClassAddress = (EditText) findViewById(R.id.edtClassAddress);
         if (classAddress != null) {
             edtClassAddress.setText(classAddress);
         }
 
         // fetch previously saved latitude and longitude if possible
-        if (classAddress != null && classAddress != "") {
-            classLatLng = session.getClassAddressLatLng();
+        if (classAddress != null && !classAddress.isEmpty()) {
+            classLatLng = sessionManager.getClassAddressLatLng();
         }
         else {
             double latlng[] = getIntent().getDoubleArrayExtra(getString(R.string.EXTRA_MESSAGE_LATLNG));
@@ -144,14 +143,14 @@ public class CreateClassActivity extends AppCompatActivity
         }
 
         // pre-fill class description if possible
-        classDescription = session.getClassDescription();
+        classDescription = sessionManager.getClassDescription();
         edtClassDescription = (EditText) findViewById(R.id.edtClassDescription);
         if (classDescription != null) {
             edtClassDescription.setText(classDescription);
         }
 
         // pre-fill class fee if possible
-        classFee = session.getClassFee();
+        classFee = sessionManager.getClassFee();
         edtClassFee = (EditText) findViewById(R.id.edtClassFee);
         if (classFee != 0) {
             edtClassFee.setText(String.valueOf(classFee));
@@ -170,44 +169,43 @@ public class CreateClassActivity extends AppCompatActivity
 
     private void saveUserInput() {
         className = edtClassName.getText().toString();
-        if (className != null && !className.isEmpty()) {
-            session.setClassName(className);
+        if (!className.isEmpty()) {
+            sessionManager.setClassName(className);
         }
 
         // save date, time and duration to SharedPreference
-        SimpleDateFormat format = new SimpleDateFormat(getString(
-                R.string.preference_key_class_date_time_pattern));
-        session.setClassDateTime(format.format(classDate.getTime()));
-        session.setClassDateTime(format.format(classDate.getTime()));
+        SimpleDateFormat format = new SimpleDateFormat(SessionManager.PREFERENCE_KEY_CLASS_DATE_TIME_PATTERN);
+        sessionManager.setClassDateTime(format.format(classDate.getTime()));
+        sessionManager.setClassDateTime(format.format(classDate.getTime()));
 
-        session.setClassDuration(classDuration);
+        sessionManager.setClassDuration(classDuration);
 
         classAddress = edtClassAddress.getText().toString();
-        if (classAddress != null && !classAddress.isEmpty()) {
-            session.setClassAddress(classAddress);
+        if (!classAddress.isEmpty()) {
+            sessionManager.setClassAddress(classAddress);
             LatLng latlng = placeManager.getLocationFromAddress(classAddress);
             if (latlng != null) {
                 classLatLng = latlng;
             }
             if (classLatLng != null) {
-                session.setClassAddressLatLng(classLatLng);
+                sessionManager.setClassAddressLatLng(classLatLng);
             }
         }
 
         classDescription = edtClassDescription.getText().toString();
-        if (classDescription != null && !classDescription.isEmpty()) {
-            session.setClassDescription(classDescription);
+        if (!classDescription.isEmpty()) {
+            sessionManager.setClassDescription(classDescription);
         }
 
         String strClassFee = edtClassFee.getText().toString();
         try {
-            if (strClassFee != null && !strClassFee.isEmpty()) {
+            if (!strClassFee.isEmpty()) {
                 classFee = Float.parseFloat(strClassFee);
             }
             else {
                 classFee = 0;
             }
-            session.setClassFee(classFee);
+            sessionManager.setClassFee(classFee);
         }
         catch (Exception e) {
             classFee = 0;
@@ -226,8 +224,7 @@ public class CreateClassActivity extends AppCompatActivity
         JSONObject classDetails = new JSONObject();
         try {
             classDetails.put(getString(R.string.EXTRA_MESSAGE_NAME), className);
-            SimpleDateFormat format = new SimpleDateFormat(getString(
-                    R.string.preference_key_class_date_time_pattern));
+            SimpleDateFormat format = new SimpleDateFormat(SessionManager.PREFERENCE_KEY_CLASS_DATE_TIME_PATTERN);
             classDetails.put(getString(R.string.EXTRA_MESSAGE_DATETIME), format.format(classDate.getTime()));
             classDetails.put(getString(R.string.EXTRA_MESSAGE_ADDRESS), classAddress);
             classDetails.put(getString(R.string.EXTRA_MESSAGE_LATITUDE), classLatLng.latitude);
@@ -322,10 +319,7 @@ public class CreateClassActivity extends AppCompatActivity
                     new double[]{classLatLng.latitude, classLatLng.longitude});
         }
         classAddress = edtClassAddress.getText().toString();
-        if (classAddress != null) {
-            intent.putExtra(getString(R.string.EXTRA_MESSAGE_ADDRESS),
-                    classAddress);
-        }
+        intent.putExtra(getString(R.string.EXTRA_MESSAGE_ADDRESS), classAddress);
         startActivityForResult(intent, REQUEST_ADDRESS_PICKER);
     }
 }

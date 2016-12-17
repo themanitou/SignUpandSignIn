@@ -4,6 +4,7 @@ package ca.skillsup.androidapp.app;
  * Created by manitou on 11/3/16.
  */
 import android.app.Application;
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -45,6 +46,10 @@ public class AppController extends Application {
     public void onCreate() {
         super.onCreate();
         mInstance = this;
+    }
+
+    public static synchronized Context getContext() {
+        return mInstance;
     }
 
     public static synchronized AppController getInstance() {

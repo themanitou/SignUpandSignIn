@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -32,10 +31,6 @@ import org.json.JSONObject;
 
 import ca.skillsup.androidapp.R;
 import ca.skillsup.androidapp.helper.PlaceManager;
-
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class AddressPickerFragment extends FragmentActivity implements
         OnMapReadyCallback,
@@ -92,7 +87,7 @@ public class AddressPickerFragment extends FragmentActivity implements
             selectedLatlng = new LatLng(latlng[0],latlng[1]);
         }
 
-        placeManager = PlaceManager.getInstance(this);
+        placeManager = PlaceManager.getInstance();
     }
 
     public void onOKButtonClicked(View view) {
@@ -163,7 +158,10 @@ public class AddressPickerFragment extends FragmentActivity implements
         mMap = googleMap;
 
         // in case app does not have permission to access location services
-        if (placeManager.checkLocationPermission() == false) {
+        if (!PlaceManager.checkLocationPermission()) {
+            Toast.makeText(this, "App does not have permission to access location service",
+                    Toast.LENGTH_SHORT).show();
+
             return;
         }
 

@@ -4,8 +4,6 @@ import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
@@ -28,7 +26,6 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import ca.skillsup.androidapp.R;
@@ -37,20 +34,15 @@ import ca.skillsup.androidapp.helper.SQLiteHandler;
 import ca.skillsup.androidapp.helper.SessionManager;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
-
-import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     private static final String TAG = RegisterActivity.class.getSimpleName();
 
-    private SessionManager session;
+    private SessionManager sessionManager;
     private SQLiteHandler db;
     private PlaceManager placeManager;
 
@@ -99,10 +91,10 @@ public class MainActivity extends AppCompatActivity
         // SqLite database handler
         db = new SQLiteHandler(this);
         // Session manager
-        session = SessionManager.getInstance(this);
+        sessionManager = SessionManager.getInstance();
 
         // Place Manager
-        placeManager = PlaceManager.getInstance(this);
+        placeManager = PlaceManager.getInstance();
 
         // set up onMapReadyCallback
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.main_map);
@@ -119,7 +111,7 @@ public class MainActivity extends AppCompatActivity
         Menu menu = navigationView.getMenu();
         menu.clear();
 
-        if (!session.isLoggedIn()) {
+        if (!sessionManager.isLoggedIn()) {
             nvHeaderText.setText("");
             nvHeaderEmail.setText("");
             menu.add(NAV_MENU_ACTION_GROUP,
@@ -151,7 +143,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void assignActionToFab() {
-        if (!session.isLoggedIn()) {
+        if (!sessionManager.isLoggedIn()) {
             fabMain.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -217,7 +209,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -227,7 +218,7 @@ public class MainActivity extends AppCompatActivity
             userLogin();
         }
         else if (id == NAV_MENU_ACTION_GROUP_SIGNOUT) {
-            session.setLogout();
+            sessionManager.setLogout();
             db.deleteUsers();
 
             Log.i(TAG, "onNavigationItemSelected: Logout successful.");
@@ -244,10 +235,10 @@ public class MainActivity extends AppCompatActivity
             createClass();
         }
         else if (id == NAV_MENU_HELP_GROUP_MAKEWISH) {
-            session.clearUserPref();
+            sessionManager.clearUserPref();
         }
         else if (id == NAV_MENU_HELP_GROUP_DEMO) {
-            session.clearPref();
+            sessionManager.clearPref();
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(ca.skillsup.androidapp.R.id.drawer_layout);
@@ -290,8 +281,7 @@ public class MainActivity extends AppCompatActivity
                     String className = classDetails.getString(getString(R.string.EXTRA_MESSAGE_NAME));
 
                     String strClassDate = classDetails.getString(getString(R.string.EXTRA_MESSAGE_DATETIME));
-                    Date classDate = new SimpleDateFormat(getString(
-                            R.string.preference_key_class_date_time_pattern)).parse(strClassDate);
+                    Date classDate = new SimpleDateFormat(SessionManager.PREFERENCE_KEY_CLASS_DATE_TIME_PATTERN).parse(strClassDate);
 
                     String classAddress = classDetails.getString(getString(R.string.EXTRA_MESSAGE_ADDRESS));
                     Double lat = classDetails.getDouble(getString(R.string.EXTRA_MESSAGE_LATITUDE));
@@ -334,13 +324,21 @@ public class MainActivity extends AppCompatActivity
         mMap = googleMap;
 
         // in case app does not have permission to access location services
-        if (placeManager.checkLocationPermission() == false) {
+        if (!PlaceManager.checkLocationPermission()) {
+            String warningStr = "App does not have permission to access location service";
+            Log.w(TAG, warningStr);
+            Toast.makeText(this, warningStr, Toast.LENGTH_SHORT).show();
+
             return;
         }
 
         mMap.setMyLocationEnabled(true);
         Location mLocation = placeManager.getLastKnownLocation();
         if (mLocation == null) {
+            String warningStr = "Last known location is not available";
+            Log.w(TAG, warningStr);
+            Toast.makeText(this, warningStr, Toast.LENGTH_SHORT).show();
+
             return;
         }
 

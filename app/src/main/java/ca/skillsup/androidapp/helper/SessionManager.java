@@ -7,12 +7,11 @@ package ca.skillsup.androidapp.helper;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.renderscript.Double2;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import ca.skillsup.androidapp.R;
+import ca.skillsup.androidapp.app.AppController;
 
 public class SessionManager {
     // LogCat tag
@@ -23,25 +22,37 @@ public class SessionManager {
 
     // Shared Preferences
     private SharedPreferences pref, userPref;
-
     private Editor editor, userEditor;
-    private Context _context;
 
     private String userEmail;
     private boolean isLoggedIn;
 
+    private static final String PREFERENCE_FILENAME = "ca.skillsup.androidapp.USER_SESSION_DATA";
+    private static final String PREFERENCE_KEY_IS_LOGGED_IN = "isLoggedIn";
+    private static final String PREFERENCE_KEY_USER_EMAIL = "userEmail";
+    private static final String PREFERENCE_KEY_CLASS_NAME = "className";
+    private static final String PREFERENCE_KEY_CLASS_DATE_TIME = "classDateTime";
+    private static final String PREFERENCE_KEY_CLASS_DURATION = "classDuration";
+    private static final String PREFERENCE_KEY_CLASS_ADDRESS = "classAddress";
+    private static final String PREFERENCE_KEY_CLASS_ADDRESS_LATITUDE = "classAddressLatitude";
+    private static final String PREFERENCE_KEY_CLASS_ADDRESS_LONGITUDE = "classAddressLongitude";
+    private static final String PREFERENCE_KEY_CLASS_DESCRIPTION = "classDescription";
+    private static final String PREFERENCE_KEY_CLASS_FEE = "classFee";
+
+    public static final String PREFERENCE_KEY_CLASS_DATE_TIME_PATTERN = "yyyy-MM-dd\'T\'HH:mm";
+
     private SessionManager() { }
 
-    public static SessionManager getInstance(Context context) {
+    public static SessionManager getInstance() {
         if (mInstance == null) {
+            Context mContext = AppController.getContext();
+
             mInstance = new SessionManager();
-            mInstance._context = context;
-            mInstance.pref = context.getSharedPreferences(context.getString(R.string.preference_filename),
-                    context.MODE_PRIVATE);
+            mInstance.pref = mContext.getSharedPreferences(PREFERENCE_FILENAME, Context.MODE_PRIVATE);
             mInstance.editor = mInstance.pref.edit();
 
-            mInstance.isLoggedIn = mInstance.pref.getBoolean(mInstance._context.getString(R.string.preference_key_is_logged_in), false);
-            mInstance.userEmail = mInstance.pref.getString(mInstance._context.getString(R.string.preference_key_user_email), null);
+            mInstance.isLoggedIn = mInstance.pref.getBoolean(PREFERENCE_KEY_IS_LOGGED_IN, false);
+            mInstance.userEmail = mInstance.pref.getString(PREFERENCE_KEY_USER_EMAIL, null);
 
             if (mInstance.isLoggedIn) {
                 mInstance.initializeUserPref();
@@ -53,7 +64,7 @@ public class SessionManager {
 
     public void setLogout() {
         isLoggedIn = false;
-        editor.putBoolean(_context.getString(R.string.preference_key_is_logged_in), false);
+        editor.putBoolean(PREFERENCE_KEY_IS_LOGGED_IN, false);
         editor.commit();
 
         userEditor = null;
@@ -61,8 +72,8 @@ public class SessionManager {
     }
 
     public void setLogin(String email) {
-        editor.putString(_context.getString(R.string.preference_key_user_email), email);
-        editor.putBoolean(_context.getString(R.string.preference_key_is_logged_in), true);
+        editor.putString(PREFERENCE_KEY_USER_EMAIL, email);
+        editor.putBoolean(PREFERENCE_KEY_IS_LOGGED_IN, true);
         editor.commit();
 
         isLoggedIn = true;
@@ -78,7 +89,7 @@ public class SessionManager {
 
     public void setUserEmail(String email) {
         userEmail = email;
-        editor.putString(_context.getString(R.string.preference_key_user_email), email);
+        editor.putString(PREFERENCE_KEY_USER_EMAIL, email);
         editor.commit();
 
         Log.d(TAG, "Set user email " + email);
@@ -89,63 +100,63 @@ public class SessionManager {
     }
 
     public void setClassName(String className) {
-        userEditor.putString(_context.getString(R.string.preference_key_class_name), className);
+        userEditor.putString(PREFERENCE_KEY_CLASS_NAME, className);
         userEditor.commit();
 
         Log.d(TAG, "Class name saved to session preference.");
     }
 
     public String getClassName() {
-        return userPref.getString(_context.getString(R.string.preference_key_class_name), null);
+        return userPref.getString(PREFERENCE_KEY_CLASS_NAME, null);
     }
 
     public void setClassDateTime(String classDateTime) {
-        userEditor.putString(_context.getString(R.string.preference_key_class_date_time), classDateTime);
+        userEditor.putString(PREFERENCE_KEY_CLASS_DATE_TIME, classDateTime);
         userEditor.commit();
 
         Log.d(TAG, "Class date saved to session preference.");
     }
 
     public String getClassDateTime() {
-        return userPref.getString(_context.getString(R.string.preference_key_class_date_time), null);
+        return userPref.getString(PREFERENCE_KEY_CLASS_DATE_TIME, null);
     }
 
     public void setClassDuration(String classDuration) {
-        userEditor.putString(_context.getString(R.string.preference_key_class_duration), classDuration);
+        userEditor.putString(PREFERENCE_KEY_CLASS_DURATION, classDuration);
         userEditor.commit();
 
         Log.d(TAG, "Class duration saved to session preference.");
     }
 
     public String getClassDuration() {
-        return userPref.getString(_context.getString(R.string.preference_key_class_duration), null);
+        return userPref.getString(PREFERENCE_KEY_CLASS_DURATION, null);
     }
 
     public void setClassAddress(String classAddress) {
-        userEditor.putString(_context.getString(R.string.preference_key_class_address), classAddress);
+        userEditor.putString(PREFERENCE_KEY_CLASS_ADDRESS, classAddress);
         userEditor.commit();
 
         Log.d(TAG, "Class address saved to session preference.");
     }
 
     public String getClassAddress() {
-        return userPref.getString(_context.getString(R.string.preference_key_class_address), null);
+        return userPref.getString(PREFERENCE_KEY_CLASS_ADDRESS, null);
     }
 
     public void setClassAddressLatLng(LatLng classAddressLatLng) {
         Double lat = classAddressLatLng.latitude;
         Double lng = classAddressLatLng.longitude;
 
-        userEditor.putString(_context.getString(R.string.preference_key_class_address_latitude), lat.toString());
-        userEditor.putString(_context.getString(R.string.preference_key_class_address_longitude), lng.toString());
+        userEditor.putString(PREFERENCE_KEY_CLASS_ADDRESS_LATITUDE, lat.toString());
+        userEditor.putString(PREFERENCE_KEY_CLASS_ADDRESS_LONGITUDE, lng.toString());
         userEditor.commit();
 
         Log.d(TAG, "Class latitude and longitude saved to session preference.");
     }
 
     public LatLng getClassAddressLatLng() {
-        String strLat = userPref.getString(_context.getString(R.string.preference_key_class_address_latitude), null);
-        String strLng = userPref.getString(_context.getString(R.string.preference_key_class_address_longitude), null);
+        String strLat = userPref.getString(PREFERENCE_KEY_CLASS_ADDRESS_LATITUDE, null);
+        String strLng = userPref.getString(PREFERENCE_KEY_CLASS_ADDRESS_LONGITUDE, null);
 
         if (strLat == null || strLng == null) {
             return null;
@@ -155,31 +166,30 @@ public class SessionManager {
     }
 
     public void setClassDescription(String classDescription) {
-        userEditor.putString(_context.getString(R.string.preference_key_class_description), classDescription);
+        userEditor.putString(PREFERENCE_KEY_CLASS_DESCRIPTION, classDescription);
         userEditor.commit();
 
         Log.d(TAG, "Class description saved to session preference.");
     }
 
     public String getClassDescription() {
-        return userPref.getString(_context.getString(R.string.preference_key_class_description), null);
+        return userPref.getString(PREFERENCE_KEY_CLASS_DESCRIPTION, null);
     }
 
     public void setClassFee(float classFee) {
-        userEditor.putFloat(_context.getString(R.string.preference_key_class_fee), classFee);
+        userEditor.putFloat(PREFERENCE_KEY_CLASS_FEE, classFee);
         userEditor.commit();
 
         Log.d(TAG, "Class fee saved to session preference.");
     }
 
     public float getClassFee() {
-        return userPref.getFloat(_context.getString(R.string.preference_key_class_fee), 0);
+        return userPref.getFloat(PREFERENCE_KEY_CLASS_FEE, 0);
     }
 
     private void initializeUserPref() {
-        userPref = _context.getSharedPreferences(
-                _context.getString(R.string.preference_filename) + userEmail,
-                _context.MODE_PRIVATE);
+        userPref = AppController.getContext().getSharedPreferences
+                (PREFERENCE_FILENAME + userEmail, Context.MODE_PRIVATE);
         userEditor = userPref.edit();
     }
 

@@ -39,7 +39,7 @@ public class LoginActivity extends Activity {
     private EditText inputEmail;
     private EditText inputPassword;
     private ProgressDialog pDialog;
-    private SessionManager session;
+    private SessionManager sessionManager;
     private SQLiteHandler db;
 
     @Override
@@ -60,10 +60,10 @@ public class LoginActivity extends Activity {
         db = new SQLiteHandler(this);
 
         // Session manager
-        session = SessionManager.getInstance(this);
+        sessionManager = SessionManager.getInstance();
 
         // pre-fill user email from SharedPreference
-        String savedUserEmail = session.getUserEmail();
+        String savedUserEmail = sessionManager.getUserEmail();
         if (savedUserEmail != null) {
             inputEmail.setText(savedUserEmail);
         }
@@ -139,8 +139,8 @@ public class LoginActivity extends Activity {
                         db.addUser(name, email, uid, created_at);
 
                         // user successfully logged in
-                        // Create login session
-                        session.setLogin(email);
+                        // Create login sessionManager
+                        sessionManager.setLogin(email);
 
                         // return the user's info to the caller
                         Intent data = new Intent();
