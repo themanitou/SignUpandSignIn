@@ -6,7 +6,6 @@ import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.widget.DatePicker;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 
 /**
@@ -19,7 +18,7 @@ public class DatePickerFragment extends DialogFragment
     public callBackListener mCallback;
 
     public interface callBackListener {
-        void onDatePickerListener(int year, int month, int day);
+        void onDatePicked(int year, int month, int day);
     }
 
     public static DatePickerFragment newInstance(Calendar calendar) {
@@ -49,7 +48,7 @@ public class DatePickerFragment extends DialogFragment
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
-        mCallback.onDatePickerListener(year, month, day);
+        mCallback.onDatePicked(year, month, day);
     }
 
 }

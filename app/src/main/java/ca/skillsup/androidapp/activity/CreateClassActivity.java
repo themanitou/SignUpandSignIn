@@ -30,11 +30,13 @@ import ca.skillsup.androidapp.dialog.NumberPickerFragment;
 import ca.skillsup.androidapp.dialog.TimePickerFragment;
 import ca.skillsup.androidapp.helper.PlaceManager;
 import ca.skillsup.androidapp.helper.SessionManager;
+import ca.skillsup.androidapp.helper.TransactionManager;
 
 public class CreateClassActivity extends AppCompatActivity
         implements DatePickerFragment.callBackListener,
                     TimePickerFragment.callBackListener,
-                    NumberPickerFragment.callBackListener {
+                    NumberPickerFragment.callBackListener,
+                    TransactionManager.callBackListener {
 
     // LogCat tag
     private static String TAG = CreateClassActivity.class.getSimpleName();
@@ -43,6 +45,7 @@ public class CreateClassActivity extends AppCompatActivity
 
     private SessionManager sessionManager;
     private PlaceManager placeManager;
+    private TransactionManager transactionManager;
 
     FloatingActionButton fabCreateClass;
 
@@ -79,6 +82,9 @@ public class CreateClassActivity extends AppCompatActivity
 
         // Place manager
         placeManager = PlaceManager.getInstance();
+
+        // Transaction manager
+        transactionManager = TransactionManager.getInstance();
 
         fabCreateClass = (FloatingActionButton) findViewById(R.id.fabCreateClass);
         fabCreateClass.setImageDrawable(ContextCompat.getDrawable(this, R.drawable.ic_done_36dp));
@@ -220,6 +226,10 @@ public class CreateClassActivity extends AppCompatActivity
         // save user input data
         saveUserInput();
 
+        // transact to MySQL
+        // create venue
+        transactionManager.createVenue(this, classAddress, classLatLng.longitude, classLatLng.latitude);
+
         // return to main activity and indicate that class is published
         JSONObject classDetails = new JSONObject();
         try {
@@ -243,23 +253,29 @@ public class CreateClassActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDatePickerListener(int year, int month, int day) {
+    public void onDatePicked(int year, int month, int day) {
         classDate.set(year, month, day,
                 classDate.get(Calendar.HOUR_OF_DAY), classDate.get(Calendar.MINUTE));
         showDate();
     }
 
     @Override
-    public void onTimePickerListener(int hourOfDay, int minute) {
+    public void onTimePicked(int hourOfDay, int minute) {
         classDate.set(classDate.get(Calendar.YEAR), classDate.get(Calendar.MONTH),
                 classDate.get(Calendar.DAY_OF_MONTH), hourOfDay, minute);
         showTime();
     }
 
     @Override
-    public void onNumberPickerListener(int selectPosition) {
+    public void onNumberPicked(int selectPosition) {
         classDuration = String.valueOf(allDurations[selectPosition - 1]);
         tvSetDuration.setText(classDuration);
+    }
+
+    @Override
+    public void onTransactionResult(int code, String message) {
+        Toast.makeText(this, "Code: " + String.valueOf(code) + "\n" + message,
+                Toast.LENGTH_LONG).show();
     }
 
     public void onSelectDateClicked(View view) {

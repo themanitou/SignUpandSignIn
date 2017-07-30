@@ -41,8 +41,8 @@ public class PlaceManager {
 
     private static Location lastKnownLocation;
 
-    private static Cache<LatLng, String> latLng2AddrCache;
-    private static Cache<String, LatLng> addr2LatLngCache;
+    public static Cache<LatLng, String> latLng2AddrCache;
+    public static Cache<String, LatLng> addr2LatLngCache;
 
     private static final int MAX_CACHE_ENTRIES = 1000;
 

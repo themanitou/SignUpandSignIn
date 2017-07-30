@@ -145,9 +145,14 @@ public class AddressPickerFragment extends FragmentActivity implements
         if (requestCode == REQUEST_ADDRESS_AUTOCOMPLETE) {
             if (resultCode == RESULT_OK) {
                 Place place = PlaceAutocomplete.getPlace(this, data);
+                LatLng latLng = place.getLatLng();
+                String addr = place.getAddress().toString();
+                // add these entries to cache
+                PlaceManager.addr2LatLngCache.put(addr, latLng);
+                PlaceManager.latLng2AddrCache.put(latLng, addr);
                 // move map view to the new address
-                mMap.moveCamera(CameraUpdateFactory.newLatLng(place.getLatLng()));
-                tvSearchAddress.setText(place.getAddress());
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                tvSearchAddress.setText(addr);
                 ignoreCameraIdleEvent = true;
             }
         }

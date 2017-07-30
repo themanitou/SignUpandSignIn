@@ -3,14 +3,10 @@ package ca.skillsup.androidapp.dialog;
 import android.app.Activity;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.app.TimePickerDialog;
 import android.os.Bundle;
-import android.text.format.DateFormat;
 import android.widget.NumberPicker;
-import android.widget.TimePicker;
 
 import java.util.Arrays;
-import java.util.Calendar;
 
 import ca.skillsup.androidapp.R;
 
@@ -24,7 +20,7 @@ public class NumberPickerFragment extends DialogFragment
     public callBackListener mCallback;
 
     public interface callBackListener {
-        void onNumberPickerListener(int number);
+        void onNumberPicked(int number);
     }
 
     public static NumberPickerFragment newInstance(String title, int[] allNumbers, int selectPosition) {
@@ -67,7 +63,7 @@ public class NumberPickerFragment extends DialogFragment
     }
 
     public void onValueChange(NumberPicker view, int oldValue, int newValue) {
-        mCallback.onNumberPickerListener(newValue);
+        mCallback.onNumberPicked(newValue);
     }
 
 }

@@ -19,7 +19,7 @@ public class TimePickerFragment extends DialogFragment
     public callBackListener mCallback;
 
     public interface callBackListener {
-        void onTimePickerListener(int hourOfDay, int minute);
+        void onTimePicked(int hourOfDay, int minute);
     }
 
     public static TimePickerFragment newInstance(Calendar calendar) {
@@ -48,7 +48,7 @@ public class TimePickerFragment extends DialogFragment
     }
 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        mCallback.onTimePickerListener(hourOfDay, minute);
+        mCallback.onTimePicked(hourOfDay, minute);
     }
 
 }
